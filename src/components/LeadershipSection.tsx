@@ -26,8 +26,8 @@ const leaders = [
   },
   {
     initial: "F",
-    name: "M.D. Furhan Siddiq",
-    title: "Director & Head of Operations",
+    name: "M B FURHAN SIDDIQ",
+    title: "Director",
     bio: "A visionary leader with deep expertise in project management and client relations, ensuring every Aikya project is delivered with precision and excellence.",
   },
 ];

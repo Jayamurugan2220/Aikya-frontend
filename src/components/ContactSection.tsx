@@ -91,7 +91,7 @@ const ContactSection = () => {
                 <div className="mt-1 font-body text-sm text-muted-foreground space-y-1">
                   <p>AIKYA BUILDERS PVT LTD</p>
                   <p>NO 2, EDEN PARK STREET, KRUNJI NAGAR, WEST TAMBARAM, CHENNAI - 600045</p>
-                  <p>B. GOPALAKRISHNAN / M. D. FURHAN SIDDIQ</p>
+                  <p>B. GOPALAKRISHNAN / M B FURHAN SIDDIQ</p>
                 </div>
               </div>
             </div>
