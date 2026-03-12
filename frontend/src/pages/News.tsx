@@ -4,18 +4,19 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
-import { cmsAPI } from "@/services/api";
+import { cmsItemsAPI } from "@/services/api";
 import { Calendar, ArrowRight } from "lucide-react";
+import images from "@/assets/imageAssets";
 
 const News = () => {
-  const [newsData, setNewsData] = useState<any>(null);
+  const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNewsData = async () => {
       try {
-        const response = await cmsAPI.getNews();
-        setNewsData(response.data);
+        const response = await cmsItemsAPI.getArticles({ status: 'published' });
+        setArticles(response.data || []);
       } catch (error) {
         console.error("Error fetching news:", error);
       } finally {
@@ -25,7 +26,7 @@ const News = () => {
     fetchNewsData();
   }, []);
 
-  if (loading || !newsData) {
+  if (loading) {
     return (
       <>
         <Navbar />
@@ -58,10 +59,10 @@ const News = () => {
               transition={{ duration: 0.6 }}
             >
               <h1 className="font-heading text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                {newsData.heading || 'Our Latest'} <span className="text-gray-500">{newsData.subheading || 'Stories'}</span>
+                Our Latest <span className="text-gray-500">Stories</span>
               </h1>
               <p className="font-body text-lg text-gray-600 max-w-3xl mx-auto">
-                {newsData.description || 'Stay informed with the latest developments, achievements, and stories from our journey.'}
+                Stay informed with the latest developments, achievements, and stories from our journey.
               </p>
             </motion.div>
           </div>
@@ -71,7 +72,7 @@ const News = () => {
         <section className="section-padding bg-white">
           <div className="mx-auto max-w-7xl">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(newsData.articles || []).map((article: any, index: number) => (
+              {articles.map((article: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
@@ -82,7 +83,7 @@ const News = () => {
                 >
                   <div className="aspect-video bg-gray-200">
                     <img
-                      src={article.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop'}
+                      src={article.image || images.projects.flatsAndApartments[0]}
                       alt={article.title}
                       className="w-full h-full object-cover"
                     />
@@ -90,13 +91,13 @@ const News = () => {
                   <div className="p-6">
                     <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                       <Calendar className="h-4 w-4" />
-                      <span>{article.date || new Date().toLocaleDateString()}</span>
+                      <span>{article.publishedDate ? new Date(article.publishedDate).toLocaleDateString() : new Date().toLocaleDateString()}</span>
                     </div>
                     <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">
                       {article.title}
                     </h3>
                     <p className="font-body text-gray-600 text-sm mb-4 line-clamp-3">
-                      {article.description}
+                      {article.excerpt || article.description}
                     </p>
                     <button className="flex items-center gap-2 text-gray-900 font-body font-semibold hover:gap-3 transition-all">
                       Read More <ArrowRight className="h-4 w-4" />

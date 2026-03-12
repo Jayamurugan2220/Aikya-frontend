@@ -1,14 +1,20 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Clock, Shield, MessageCircle, Heart, Palette, Star } from "lucide-react";
+import { Clock, Shield, MessageCircle, Heart, Palette, Star, Award, TrendingUp, Users } from "lucide-react";
+import { cmsItemsAPI } from "@/services/api";
 
-const reasons = [
-  { icon: Clock, title: "Rapid Delivery", desc: "We honor timelines with on-time project completion and best-in-class safety standards." },
-  { icon: Shield, title: "Proven Track Record", desc: "100+ successful projects with a 95% client success rate and unwavering commitment to excellence." },
-  { icon: MessageCircle, title: "Transparent Process", desc: "Open communication at every milestone—keeping you informed throughout your journey." },
-  { icon: Heart, title: "Partner-First Mindset", desc: "Your success is our success. We build lasting relationships and co-create value together." },
-  { icon: Palette, title: "Innovation-Led Design", desc: "Modern architectural designs combined with sustainable construction techniques." },
-  { icon: Star, title: "Trusted by Partners", desc: "50+ strategic partnerships with investors and clients who believe in our vision." },
-];
+// Icon mapping
+const iconMap: any = {
+  Clock,
+  Shield,
+  MessageCircle,
+  Heart,
+  Palette,
+  Star,
+  Award,
+  TrendingUp,
+  Users,
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -20,6 +26,28 @@ const fadeUp = {
 };
 
 const WhyChooseSection = () => {
+  const [reasons, setReasons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await cmsItemsAPI.getWhyChooseReasons();
+        const sortedReasons = (response.data || []).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        setReasons(sortedReasons);
+      } catch (error) {
+        console.error('Failed to fetch reasons:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReasons();
+  }, []);
+
+  if (loading || reasons.length === 0) {
+    return null;
+  }
+
   return (
     <section id="why-us" className="section-padding bg-gray-50 relative overflow-hidden">
       <div className="mx-auto max-w-7xl relative z-10">
@@ -43,20 +71,23 @@ const WhyChooseSection = () => {
           viewport={{ once: true, margin: "-50px" }}
           className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {reasons.map((r, i) => (
-            <motion.div
-              key={r.title}
-              variants={fadeUp}
-              custom={i}
-              className="group rounded-2xl bg-white p-8 transition-all hover:shadow-xl border border-gray-100"
-            >
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white transition-colors">
-                <r.icon className="h-6 w-6" />
-              </div>
-              <h3 className="font-heading text-xl font-semibold text-gray-900">{r.title}</h3>
-              <p className="mt-2 font-body text-sm text-gray-600 leading-relaxed">{r.desc}</p>
-            </motion.div>
-          ))}
+          {reasons.map((r, i) => {
+            const IconComponent = iconMap[r.icon] || Star;
+            return (
+              <motion.div
+                key={r._id}
+                variants={fadeUp}
+                custom={i}
+                className="group rounded-2xl bg-white p-8 transition-all hover:shadow-xl border border-gray-100"
+              >
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white transition-colors">
+                  <IconComponent className="h-6 w-6" />
+                </div>
+                <h3 className="font-heading text-xl font-semibold text-gray-900">{r.title}</h3>
+                <p className="mt-2 font-body text-sm text-gray-600 leading-relaxed">{r.desc}</p>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

@@ -1,0 +1,129 @@
+// Example: How to add ImageUpload to Leadership Section in AdminCMS.tsx
+
+// 1. Import ImageUpload at the top of the file
+import ImageUpload from '@/components/ImageUpload';
+
+// 2. In the Leadership case section, replace the note with actual form:
+
+case 'leadership':
+  return (
+    <Card className="bg-slate-800/50 border-slate-700">
+      <CardHeader>
+        <CardTitle className="text-white">Edit Leadership Section</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div>
+          <label className="text-sm font-medium text-slate-300">Heading</label>
+          <Input
+            value={leadershipData.heading}
+            onChange={(e) => setLeadershipData({ ...leadershipData, heading: e.target.value })}
+            className="mt-1 bg-slate-900 border-slate-700 text-white"
+          />
+        </div>
+
+        {/* Leadership Team Members */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-white">Team Members</h3>
+          
+          {leadershipData.leaders?.map((leader, index) => (
+            <div key={index} className="p-4 bg-slate-900/50 rounded-lg border border-slate-700 space-y-4">
+              <div className="flex justify-between items-center">
+                <h4 className="text-white font-medium">Leader {index + 1}</h4>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => {
+                    const updatedLeaders = leadershipData.leaders.filter((_, i) => i !== index);
+                    setLeadershipData({ ...leadershipData, leaders: updatedLeaders });
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-slate-300">Name</label>
+                  <Input
+                    value={leader.name}
+                    onChange={(e) => {
+                      const updatedLeaders = [...leadershipData.leaders];
+                      updatedLeaders[index].name = e.target.value;
+                      setLeadershipData({ ...leadershipData, leaders: updatedLeaders });
+                    }}
+                    className="mt-1 bg-slate-900 border-slate-700 text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-slate-300">Role</label>
+                  <Input
+                    value={leader.role}
+                    onChange={(e) => {
+                      const updatedLeaders = [...leadershipData.leaders];
+                      updatedLeaders[index].role = e.target.value;
+                      setLeadershipData({ ...leadershipData, leaders: updatedLeaders });
+                    }}
+                    className="mt-1 bg-slate-900 border-slate-700 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-slate-300">Bio</label>
+                <Textarea
+                  value={leader.bio}
+                  onChange={(e) => {
+                    const updatedLeaders = [...leadershipData.leaders];
+                    updatedLeaders[index].bio = e.target.value;
+                    setLeadershipData({ ...leadershipData, leaders: updatedLeaders });
+                  }}
+                  rows={3}
+                  className="mt-1 bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+
+              {/* IMAGE UPLOAD COMPONENT HERE! */}
+              <ImageUpload
+                currentImage={leader.image}
+                label="Leader Photo"
+                className="mt-2"
+                onUploadComplete={(imageUrl) => {
+                  const updatedLeaders = [...leadershipData.leaders];
+                  updatedLeaders[index].image = imageUrl;
+                  setLeadershipData({ ...leadershipData, leaders: updatedLeaders });
+                  toast({
+                    title: "Image uploaded",
+                    description: "Leader photo uploaded successfully to cloud storage",
+                  });
+                }}
+              />
+            </div>
+          ))}
+
+          {/* Add New Leader Button */}
+          <Button
+            onClick={() => {
+              const newLeader = { name: '', role: '', bio: '', image: '' };
+              setLeadershipData({
+                ...leadershipData,
+                leaders: [...(leadershipData.leaders || []), newLeader]
+              });
+            }}
+            className="w-full bg-slate-700 hover:bg-slate-600"
+          >
+            Add Team Member
+          </Button>
+        </div>
+
+        <Button 
+          onClick={updateLeadership} 
+          disabled={loading} 
+          className="w-full bg-blue-600 hover:bg-blue-700"
+        >
+          <Save className="mr-2" size={18} />
+          Save Leadership Section
+        </Button>
+      </CardContent>
+    </Card>
+  );

@@ -5,17 +5,18 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
-import { cmsAPI } from "@/services/api";
+import { cmsItemsAPI } from "@/services/api";
+import images from "@/assets/imageAssets";
 
 const Services = () => {
-  const [servicesData, setServicesData] = useState<any>(null);
+  const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
-        const response = await cmsAPI.getServices();
-        setServicesData(response.data);
+        const response = await cmsItemsAPI.getServices();
+        setServices(response.data || []);
       } catch (error) {
         console.error("Error fetching services:", error);
       } finally {
@@ -25,7 +26,7 @@ const Services = () => {
     fetchServicesData();
   }, []);
 
-  if (loading || !servicesData) {
+  if (loading) {
     return (
       <>
         <Navbar />
@@ -54,7 +55,7 @@ const Services = () => {
           <div 
             className="absolute inset-0 opacity-10"
             style={{
-              backgroundImage: 'url(https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&h=800&fit=crop)',
+              backgroundImage: `url(${images.services.highway[0]})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
@@ -74,7 +75,7 @@ const Services = () => {
               </div>
               
               <h1 className="font-heading text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                {servicesData.heading || 'Our Services'}
+                Our Services
               </h1>
             </motion.div>
 
@@ -86,17 +87,17 @@ const Services = () => {
               className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-12"
             >
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                {servicesData.subheading || 'Our Services'}
+                Comprehensive Infrastructure Solutions
               </h2>
               <p className="font-body text-gray-600 text-lg leading-relaxed">
-                {servicesData.description}
+                Aikya Builds Future offers a complete range of infrastructure development services, from highways and commercial projects to integrated township development. Our expertise spans across multiple sectors, delivering quality and excellence in every project.
               </p>
             </motion.div>
           </div>
         </section>
 
         {/* Services Sections */}
-        {(servicesData.services || []).map((service: any, index: number) => (
+        {services.map((service: any, index: number) => (
           <section key={index} className={`section-padding ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
             <div className="mx-auto max-w-7xl">
               <motion.div
@@ -120,17 +121,15 @@ const Services = () => {
                   transition={{ duration: 0.6 }}
                   className={`grid grid-cols-2 gap-4 ${index % 2 === 1 ? 'md:order-2' : ''}`}
                 >
-                  {(service.images || []).slice(0, 4).map((img: string, imgIndex: number) => (
-                    <div key={imgIndex} className={imgIndex % 2 === 1 ? 'pt-8' : ''}>
+                  {service.image && (
+                    <div className="col-span-2">
                       <img
-                        src={img}
+                        src={service.image}
                         alt={service.title}
-                        className={`rounded-3xl shadow-lg w-full object-cover ${
-                          imgIndex === 0 ? 'h-64' : imgIndex === 1 ? 'h-48' : imgIndex === 2 ? 'h-56' : 'h-40'
-                        }`}
+                        className="rounded-3xl shadow-lg w-full object-cover h-64"
                       />
                     </div>
-                  ))}
+                  )}
                 </motion.div>
 
                 {/* Content */}

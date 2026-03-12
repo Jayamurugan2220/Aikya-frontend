@@ -4,18 +4,19 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
-import { cmsAPI } from "@/services/api";
+import { cmsItemsAPI } from "@/services/api";
 import { Calendar, MapPin, Clock } from "lucide-react";
+import images from "@/assets/imageAssets";
 
 const Events = () => {
-  const [eventsData, setEventsData] = useState<any>(null);
+  const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEventsData = async () => {
       try {
-        const response = await cmsAPI.getEvents();
-        setEventsData(response.data);
+        const response = await cmsItemsAPI.getEvents();
+        setEvents(response.data || []);
       } catch (error) {
         console.error("Error fetching events:", error);
       } finally {
@@ -25,7 +26,7 @@ const Events = () => {
     fetchEventsData();
   }, []);
 
-  if (loading || !eventsData) {
+  if (loading) {
     return (
       <>
         <Navbar />
@@ -58,10 +59,10 @@ const Events = () => {
               transition={{ duration: 0.6 }}
             >
               <h1 className="font-heading text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                {eventsData.heading || 'Experience Our'} <span className="text-gray-500">{eventsData.subheading || 'Events'}</span>
+                Experience Our <span className="text-gray-500">Events</span>
               </h1>
               <p className="font-body text-lg text-gray-600 max-w-3xl mx-auto">
-                {eventsData.description || 'Discover our events that shape communities and foster connections'}
+                Discover our events that shape communities and foster connections
               </p>
             </motion.div>
           </div>
@@ -71,7 +72,7 @@ const Events = () => {
         <section className="section-padding bg-white">
           <div className="mx-auto max-w-7xl">
             <div className="grid md:grid-cols-2 gap-8">
-              {(eventsData.events || []).map((event: any, index: number) => (
+              {events.map((event: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
@@ -82,7 +83,7 @@ const Events = () => {
                 >
                   <div className="aspect-video bg-gray-200">
                     <img
-                      src={event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop'}
+                      src={event.image || images.events[0]}
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />

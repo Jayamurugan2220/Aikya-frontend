@@ -12,7 +12,6 @@ const navLinks = [
   ]},
   { label: "Services", href: "/services" },
   { label: "About Us", href: "#about" },
-  { label: "Special Offers", href: "#offers" },
   { label: "Our Stories", href: "#", dropdown: [
     { label: "Group of Company", href: "/group-of-company" },
     { label: "Partner with Us", href: "/partner-with-us" },
@@ -89,8 +88,18 @@ const Navbar = () => {
       transition={{ duration: 0.6 }}
       className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <button onClick={() => handleNavClick("#home")} className="flex items-center gap-3 cursor-pointer">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4">
+        {/* Mobile toggle - LEFT SIDE */}
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className="md:hidden p-2 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors z-50"
+          aria-label="Toggle menu"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Logo - CENTER on mobile, LEFT on desktop */}
+        <button onClick={() => handleNavClick("#home")} className="flex items-center gap-3 cursor-pointer md:mr-auto">
           {/* Logo */}
           <div className="bg-gray-900 text-white px-4 py-2 rounded">
             <span className="font-heading text-xl font-bold">aikya</span>
@@ -98,8 +107,26 @@ const Navbar = () => {
           <span className="font-body text-xs text-gray-600 hidden sm:block">Building Future</span>
         </button>
 
+        {/* Offers Button - Desktop and Mobile */}
+        <button
+          onClick={() => handleNavClick("#offers")}
+          className="md:hidden flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full font-body text-sm font-semibold transition-all shadow-md"
+        >
+          <span className="text-lg">🎁</span>
+          Offers
+        </button>
+
         {/* Desktop */}
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
+          {/* Special Offers Button - Desktop */}
+          <button
+            onClick={() => handleNavClick("#offers")}
+            className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-5 py-2 rounded-full font-body text-sm font-semibold transition-all shadow-md"
+          >
+            <span className="text-lg">🎁</span>
+            Offers
+          </button>
+          
           {navLinks.map((link) => (
             link.dropdown ? (
               <div key={link.href} className="relative" ref={link.label === "Our Stories" ? storiesDropdownRef : undefined}>
@@ -199,7 +226,7 @@ const Navbar = () => {
                             className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer text-left"
                           >
                             <Settings size={18} className="text-gray-600" />
-                            <span className="font-body text-sm text-gray-900">Manage Content</span>
+                            <span className="font-body text-sm text-gray-900">Management Setting</span>
                           </button>
                         )}
                         <button
@@ -232,11 +259,6 @@ const Navbar = () => {
             )}
           </div>
         </div>
-
-        {/* Mobile toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="text-foreground md:hidden">
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
       </div>
 
       <AnimatePresence>
@@ -245,17 +267,42 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-gray-200 bg-white md:hidden shadow-lg"
+            className="border-t border-gray-200 bg-white md:hidden shadow-lg max-h-[calc(100vh-80px)] overflow-y-auto"
           >
             <div className="flex flex-col gap-4 px-6 py-6">
               {navLinks.map((link) => (
-                <button
-                  key={link.href}
-                  onClick={() => handleNavClick(link.href)}
-                  className="font-body text-gray-700 transition-colors hover:text-gray-900 text-left cursor-pointer"
-                >
-                  {link.label}
-                </button>
+                link.dropdown ? (
+                  <div key={link.href} className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setActiveDropdown(activeDropdown === link.label ? null : link.label)}
+                      className="font-body text-gray-700 transition-colors hover:text-gray-900 text-left cursor-pointer font-semibold flex items-center justify-between"
+                    >
+                      {link.label}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
+                    </button>
+                    {activeDropdown === link.label && (
+                      <div className="pl-4 flex flex-col gap-2">
+                        {link.dropdown.map((item) => (
+                          <button
+                            key={item.href}
+                            onClick={() => handleNavClick(item.href)}
+                            className="font-body text-sm text-gray-600 transition-colors hover:text-gray-900 text-left cursor-pointer py-1"
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    key={link.href}
+                    onClick={() => handleNavClick(link.href)}
+                    className="font-body text-gray-700 transition-colors hover:text-gray-900 text-left cursor-pointer"
+                  >
+                    {link.label}
+                  </button>
+                )
               ))}
               {isAuthenticated && user ? (
                 <div className="space-y-3 mt-4 pt-4 border-t border-gray-200">
@@ -287,7 +334,7 @@ const Navbar = () => {
                       className="w-full rounded-lg border-2 border-gray-900 px-5 py-2.5 text-left font-body text-sm font-semibold text-gray-900 cursor-pointer flex items-center gap-2 hover:bg-gray-50"
                     >
                       <Settings size={18} />
-                      Manage Content
+                      Management Setting
                     </button>
                   )}
                   <button

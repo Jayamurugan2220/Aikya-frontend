@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Award, Briefcase, TrendingUp, Users } from "lucide-react";
+import { cmsItemsAPI } from "@/services/api";
 
 const achievements = [
   { icon: Briefcase, value: "20+", label: "Years in Real Estate & Construction" },
@@ -8,22 +10,28 @@ const achievements = [
   { icon: Users, value: "50+", label: "Strategic Partnerships" },
 ];
 
-const leaders = [
-  {
-    initial: "G",
-    name: "B. Gopalakrishnan",
-    title: "Managing Director",
-    bio: "With over 20 years of experience in the construction industry, Mr. Gopalakrishnan has been the driving force behind Aikya Builders' commitment to quality and innovation.",
-  },
-  {
-    initial: "F",
-    name: "M B FURHAN SIDDIQ",
-    title: "Director",
-    bio: "A visionary leader with deep expertise in project management and client relations, ensuring every Aikya project is delivered with precision and excellence.",
-  },
-];
-
 const LeadershipSection = () => {
+  const [leaders, setLeaders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLeaders = async () => {
+      try {
+        const response = await cmsItemsAPI.getLeaders();
+        const sortedLeaders = (response.data || []).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        setLeaders(sortedLeaders);
+      } catch (error) {
+        console.error('Failed to fetch leaders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeaders();
+  }, []);
+
+  if (loading || leaders.length === 0) {
+    return null;
+  }
   return (
     <section id="leadership" className="section-padding bg-white relative overflow-hidden">
       <div className="mx-auto max-w-7xl">
@@ -53,9 +61,21 @@ const LeadershipSection = () => {
               transition={{ duration: 0.6, delay: i * 0.15 }}
               className="rounded-2xl bg-gray-50 p-8 text-center transition-all hover:shadow-xl border border-gray-100"
             >
-              <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-gray-900 text-white">
-                <Users className="h-10 w-10" />
-              </div>
+              {leader.image ? (
+                <div className="mx-auto mb-5 h-24 w-24 rounded-full overflow-hidden border-4 border-gray-900 shadow-lg">
+                  <img 
+                    src={leader.image} 
+                    alt={leader.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-gray-900 text-white border-4 border-gray-700">
+                  <span className="text-3xl font-bold font-heading">
+                    {leader.initial || leader.name.charAt(0)}
+                  </span>
+                </div>
+              )}
               <h3 className="font-heading text-xl font-bold text-gray-900">{leader.name}</h3>
               <p className="mt-1 font-body text-sm font-semibold text-gray-600">{leader.title}</p>
               <p className="mt-4 font-body text-sm leading-relaxed text-gray-600">{leader.bio}</p>

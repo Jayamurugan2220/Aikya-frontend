@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cmsAPI } from "@/services/api";
+import images from "@/assets/imageAssets";
 
 const stats = [
   { value: "100+", label: "Projects Delivered" },
@@ -53,7 +54,7 @@ const AboutSection = () => {
           >
             <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop"
+                src={images.projects.flatsAndApartments[0]}
                 alt="Modern building"
                 className="h-full w-full object-cover"
               />

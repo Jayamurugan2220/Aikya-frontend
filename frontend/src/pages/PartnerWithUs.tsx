@@ -7,6 +7,7 @@ import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
 import { cmsAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import images from "@/assets/imageAssets";
 
 const PartnerWithUs = () => {
   const [partnershipData, setPartnershipData] = useState<any>(null);
@@ -189,7 +190,7 @@ const PartnerWithUs = () => {
               >
                 <div className="order-2 md:order-1">
                   <img
-                    src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&h=600&fit=crop"
+                    src={images.partners[0]}
                     alt="Channel Partners"
                     className="rounded-2xl shadow-xl"
                   />
@@ -222,7 +223,7 @@ const PartnerWithUs = () => {
                 </div>
                 <div>
                   <img
-                    src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop"
+                    src={images.partners[1]}
                     alt="Landowners"
                     className="rounded-2xl shadow-xl"
                   />
@@ -239,7 +240,7 @@ const PartnerWithUs = () => {
               >
                 <div className="order-2 md:order-1">
                   <img
-                    src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop"
+                    src={images.partners[2]}
                     alt="Investors"
                     className="rounded-2xl shadow-xl"
                   />
@@ -271,7 +272,7 @@ const PartnerWithUs = () => {
                 </div>
                 <div>
                   <img
-                    src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&h=600&fit=crop"
+                    src={images.partners[3]}
                     alt="Vendors"
                     className="rounded-2xl shadow-xl"
                   />

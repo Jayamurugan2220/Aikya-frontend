@@ -4,18 +4,19 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
-import { cmsAPI } from "@/services/api";
+import { cmsItemsAPI } from "@/services/api";
 import { MapPin, Briefcase, Clock } from "lucide-react";
+import images from "@/assets/imageAssets";
 
 const Careers = () => {
-  const [careersData, setCareersData] = useState<any>(null);
+  const [positions, setPositions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCareersData = async () => {
       try {
-        const response = await cmsAPI.getCareers();
-        setCareersData(response.data);
+        const response = await cmsItemsAPI.getPositions();
+        setPositions(response.data || []);
       } catch (error) {
         console.error("Error fetching careers:", error);
       } finally {
@@ -25,7 +26,7 @@ const Careers = () => {
     fetchCareersData();
   }, []);
 
-  if (loading || !careersData) {
+  if (loading) {
     return (
       <>
         <Navbar />
@@ -54,7 +55,7 @@ const Careers = () => {
           <div 
             className="absolute inset-0 opacity-30"
             style={{
-              backgroundImage: 'url(https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop)',
+              backgroundImage: `url(${images.projects.commercial[0]})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
@@ -73,11 +74,11 @@ const Careers = () => {
               </div>
               
               <h1 className="font-heading text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                {careersData.heading || 'Join Aikya'}
+                Join Our Team
               </h1>
               
               <p className="font-body text-lg text-gray-600 max-w-3xl mx-auto">
-                {careersData.description || 'Build your career with a company that builds dreams.'}
+                Build your career with a company that builds dreams.
               </p>
             </motion.div>
           </div>
@@ -86,9 +87,9 @@ const Careers = () => {
         {/* Job Openings Section */}
         <section className="section-padding bg-white">
           <div className="mx-auto max-w-7xl">
-            {careersData.openings && careersData.openings.length > 0 ? (
+            {positions && positions.length > 0 ? (
               <div className="space-y-6">
-                {careersData.openings.map((job: any, index: number) => (
+                {positions.map((job: any, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 30 }}

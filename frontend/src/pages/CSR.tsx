@@ -4,17 +4,18 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState, useEffect } from "react";
-import { cmsAPI } from "@/services/api";
+import { cmsItemsAPI } from "@/services/api";
+import images from "@/assets/imageAssets";
 
 const CSR = () => {
-  const [csrData, setCSRData] = useState<any>(null);
+  const [initiatives, setInitiatives] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCSRData = async () => {
       try {
-        const response = await cmsAPI.getCSR();
-        setCSRData(response.data);
+        const response = await cmsItemsAPI.getInitiatives();
+        setInitiatives(response.data || []);
       } catch (error) {
         console.error("Error fetching CSR:", error);
       } finally {
@@ -24,7 +25,7 @@ const CSR = () => {
     fetchCSRData();
   }, []);
 
-  if (loading || !csrData) {
+  if (loading) {
     return (
       <>
         <Navbar />
@@ -53,7 +54,7 @@ const CSR = () => {
           <div 
             className="absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'url(https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1200&h=600&fit=crop)',
+              backgroundImage: `url(${images.csr[0]})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
@@ -99,56 +100,56 @@ const CSR = () => {
             >
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&h=300&fit=crop"
+                  src={images.csr[0]}
                   alt="Environmental initiative"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop"
+                  src={images.csr[1]}
                   alt="Community service"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop"
+                  src={images.csr[2]}
                   alt="Food donation"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=400&h=300&fit=crop"
+                  src={images.csr[3]}
                   alt="Donation drive"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&h=300&fit=crop"
+                  src={images.csr[0]}
                   alt="Food distribution"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?w=400&h=300&fit=crop"
+                  src={images.csr[1]}
                   alt="Tree planting"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64 md:col-span-2">
                 <img
-                  src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=300&fit=crop"
+                  src={images.csr[2]}
                   alt="Flood relief"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden shadow-lg h-64">
                 <img
-                  src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop"
+                  src={images.csr[3]}
                   alt="Disaster relief"
                   className="w-full h-full object-cover"
                 />
@@ -172,7 +173,7 @@ const CSR = () => {
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {(csrData.initiatives || []).map((initiative: any, index: number) => (
+              {initiatives.map((initiative: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 30 }}

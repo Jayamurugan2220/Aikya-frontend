@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { useState } from "react";
 import EnquiryDialog from "@/components/EnquiryDialog";
+import images from "@/assets/imageAssets";
 
 const ContactUs = () => {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
@@ -29,7 +30,7 @@ const ContactUs = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&h=900&fit=crop')",
+              backgroundImage: `url(${images.locations.chennai})`,
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-blue-900/60"></div>

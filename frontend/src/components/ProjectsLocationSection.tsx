@@ -1,25 +1,58 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { cmsItemsAPI } from "@/services/api";
 
-const locations = [
-  {
-    name: "CHENNAI",
-    image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=600&h=400&fit=crop",
-    description: "Explore our premium projects in Chennai",
-  },
-  {
-    name: "TIRUNELVELI",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=400&fit=crop",
-    description: "Discover quality homes in Tirunelveli",
-  },
-  {
-    name: "CHENGALPATTU",
-    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
-    description: "Find your dream property in Chengalpattu",
-  },
-];
+// Helper to get the full image URL
+const getImageUrl = (imagePath: string) => {
+  if (!imagePath) return '';
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  // If it's a relative API path, prepend the backend API URL
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  if (imagePath.startsWith('/api/')) {
+    // Remove /api prefix since API_BASE already includes it
+    return API_BASE.replace('/api', '') + imagePath;
+  }
+  return imagePath;
+};
 
 const ProjectsLocationSection = () => {
+  const [locations, setLocations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await cmsItemsAPI.getLocationCards();
+        const sortedLocations = (response.data || []).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        setLocations(sortedLocations);
+      } catch (error) {
+        console.error('Failed to fetch locations:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLocations();
+  }, []);
+
+  const handleViewProject = (locationName: string) => {
+    // Check if location is Chennai (case-insensitive)
+    if (locationName.toLowerCase().includes('chennai')) {
+      navigate('/projects/chennai');
+    } else {
+      // For other locations, navigate to general projects page
+      navigate('/projects');
+    }
+  };
+
+  if (loading || locations.length === 0) {
+    return null;
+  }
   return (
     <section className="section-padding bg-gray-100 relative overflow-hidden">
       <div className="mx-auto max-w-7xl">
@@ -44,7 +77,7 @@ const ProjectsLocationSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {locations.map((location, index) => (
             <motion.div
-              key={location.name}
+              key={location._id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -53,7 +86,7 @@ const ProjectsLocationSection = () => {
             >
               <div className="relative h-96">
                 <img
-                  src={location.image}
+                  src={getImageUrl(location.image)}
                   alt={location.name}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -66,9 +99,20 @@ const ProjectsLocationSection = () => {
                   </h3>
                 </div>
 
+                {/* Description and Project Count */}
+                <div className="absolute bottom-24 left-0 right-0 text-center px-4">
+                  <p className="text-white/90 font-body text-sm">{location.description}</p>
+                  {location.projectCount > 0 && (
+                    <p className="text-white/70 font-body text-xs mt-2">{location.projectCount} Projects</p>
+                  )}
+                </div>
+
                 {/* View Project button */}
                 <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-                  <button className="bg-white/95 backdrop-blur-sm px-10 py-4 rounded-full font-body font-semibold text-gray-900 hover:bg-white transition-all flex items-center gap-2 shadow-lg group-hover:shadow-xl">
+                  <button 
+                    onClick={() => handleViewProject(location.name)}
+                    className="bg-white/95 backdrop-blur-sm px-10 py-4 rounded-full font-body font-semibold text-gray-900 hover:bg-white transition-all flex items-center gap-2 shadow-lg group-hover:shadow-xl"
+                  >
                     View Project
                     <ArrowRight className="h-4 w-4" />
                   </button>
