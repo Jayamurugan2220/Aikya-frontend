@@ -8,6 +8,7 @@ import { Badge } from '../ui/badge';
 const ProjectsManagement = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
   const [stats, setStats] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -24,7 +25,7 @@ const ProjectsManagement = () => {
           {item.location && (
             <p className="text-xs text-slate-500 mt-1">{item.location}</p>
           )}
-          {item.area && (
+          {item.area && item.area !== 'none' && (
             <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">
               📍 {item.area}
             </p>
@@ -61,6 +62,18 @@ const ProjectsManagement = () => {
       key: 'type',
       label: 'Type',
     },
+     {
+       key: 'image',
+       label: 'Image',
+       render: (value: string) =>
+         value ? (
+           <img src={value} alt="Project" className="w-12 h-10 rounded object-cover" />
+         ) : (
+           <div className="w-12 h-10 rounded bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+             <span className="text-xs text-slate-400">No img</span>
+           </div>
+         ),
+     },
   ];
 
   const filters = [
@@ -87,9 +100,7 @@ const ProjectsManagement = () => {
       label: 'All Locations',
       options: [
         { value: 'all', label: 'All Locations' },
-        { value: 'chennai', label: 'Chennai' },
-        { value: 'tirunelveli', label: 'Tirunelveli' },
-        { value: 'chengalpattu', label: 'Chengalpattu' },
+        ...locations.map(loc => ({ value: loc, label: loc })),
       ],
     },
     {
@@ -127,7 +138,7 @@ const ProjectsManagement = () => {
       type: 'select' as const,
       required: false,
       options: [
-        { value: '', label: 'No specific area' },
+        { value: 'none', label: 'No specific area' },
         { value: 'tambaram', label: 'Tambaram' },
         { value: 'perugalathur', label: 'Perugalathur' },
         { value: 'hastinapuram', label: 'Hastinapuram' },
@@ -146,15 +157,25 @@ const ProjectsManagement = () => {
     {
       name: 'category',
       label: 'Category',
-      type: 'text' as const,
+      type: 'select' as const,
       required: true,
-      placeholder: 'e.g., Residential, Commercial',
+      options: [
+        { value: 'residential', label: 'Residential' },
+        { value: 'commercial', label: 'Commercial' },
+        { value: 'plots', label: 'Plots' },
+      ],
     },
     {
       name: 'type',
       label: 'Type',
-      type: 'text' as const,
-      placeholder: 'e.g., Apartments, Villas',
+      type: 'select' as const,
+      options: [
+        { value: 'apartment', label: 'Apartment' },
+        { value: 'villa', label: 'Villa' },
+        { value: 'independent house', label: 'Independent House' },
+        { value: 'commercial space', label: 'Commercial Space' },
+        { value: 'plots', label: 'Plots' },
+      ],
     },
     {
       name: 'status',
@@ -188,6 +209,7 @@ const ProjectsManagement = () => {
       const response = await cmsItemsAPI.getProjects(filters);
       setProjects(response.data);
       setCategories(response.categories || []);
+      setLocations(response.locations || []);
       setStats(response.stats || {});
     } catch (error: any) {
       toast({
